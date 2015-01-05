@@ -32,6 +32,8 @@
     NSLog(@"%f", [result floatValue]);
     
     [self NSMutableStringTest];
+    [self NSDictionaryTest];
+    [self NSNumberTest];
 }
 
 -(IBAction)NSstringTest:(id)sender{
@@ -44,6 +46,7 @@
     
     
     //字符串复制
+    //isEqualToString比较内容相等，==比较是否同一个对象
     res=[NSString stringWithString:str1];
     NSLog(@"copy:%@",res);
     if ([str1 isEqualToString:res] == YES) {
@@ -109,6 +112,18 @@
     //获取"Athis"在str1中出现的位置
     NSRange pos = [str1 rangeOfString:@"Athis"];
     NSLog(@"Athis start position:%ld, the length is:%ld", pos.location, pos.length);
+    
+    //字符串转基本数据类型
+    NSString *numString = @"3.3333";
+    NSLog(@"3.3333 to bool:%d",[numString boolValue]);
+    NSLog(@"3.3333 to float:%f",[numString floatValue]);
+    NSLog(@"3.3333 to double:%f",[numString doubleValue]);
+    NSLog(@"3.3333 to int:%d",[numString intValue]);
+    
+    //字符串转数组
+    NSString *stringconvert = @"string convert to array";
+    NSArray *arrayString = [stringconvert componentsSeparatedByString:@" "];
+    NSLog(@"string convert to array:%@",arrayString);
 }
 
 -(void)NSstringTest{
@@ -164,6 +179,100 @@
     }
     NSLog(@"replace a with X:%@",mstr);
 }
+
+
+-(void)NSDictionaryTest{
+    //创建不可改变的词典
+    NSDictionary *dict1 = [NSDictionary dictionaryWithObjectsAndKeys:@"key1",@"value1",@"key2",@"value2",@"key3",@"value3", nil];
+    NSLog(@"Dictionary's number:%lu",[dict1 count]);
+    
+    //NSEnumerator用来遍历集合中每一处索引的对象，先得到里面所有的键值 objectEnumerator得到里面的对象，keyEnumerator得到里面的键值
+    NSEnumerator *enumerator = [dict1 keyEnumerator];
+    
+    id object;
+    while (object = [enumerator nextObject]) {
+        NSLog(@"Key is:%@",object);
+        
+        id objectValue =[dict1 objectForKey:object];
+        if (objectValue != nil) {
+            NSLog(@"%@ the value is:%@", object,objectValue);
+        }
+    }
+    
+    
+    //创建可改变的动态词典，添加的数据超过容量时，会自动扩大
+    NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionaryWithCapacity:5];
+    
+    [mutableDictionary setObject:@"value1" forKey:@"key1"];
+    [mutableDictionary setObject:@"value2" forKey:@"key2"];
+    
+    //不用遍历就得到key和value
+    NSLog(@"output all keys:%@",[mutableDictionary allKeys]);
+    NSLog(@"output all values:%@",[mutableDictionary allValues]);
+    
+    //可以动态添加修改key和value， 但是NSDictionay却不可以修改
+    [mutableDictionary setObject:@"updatevalue2tovalue3" forKey:@"key2"];
+    [mutableDictionary setObject:@"value3" forKey:@"key3"];
+    NSLog(@"output all keys:%@",[mutableDictionary allKeys]);
+    NSLog(@"output all values:%@",[mutableDictionary allValues]);
+    
+    //动态删除，删除指定键值的数据
+    [mutableDictionary removeObjectForKey:@"key1"];
+    NSLog(@"output all keys:%@",[mutableDictionary allKeys]);
+    NSLog(@"output all values:%@",[mutableDictionary allValues]);
+    
+    //删除所有数据
+    [mutableDictionary removeAllObjects];
+    NSLog(@"output all keys:%@",[mutableDictionary allKeys]);
+    NSLog(@"output all values:%@",[mutableDictionary allValues]);
+}
+
+-(void) NSNumberTest{
+    NSNumber *monthNumber = [NSNumber numberWithInt:10];
+    NSNumber *lengthNumber =[[NSNumber alloc]initWithFloat:10.8];
+    NSLog(@"monthNumber:%@",monthNumber);
+    NSLog(@"lengthNumber:%@",lengthNumber);
+    
+    int month = [monthNumber intValue];
+    float length = [lengthNumber floatValue];
+    NSLog(@"month:%d",month);
+    NSLog(@"length:%f",length);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
