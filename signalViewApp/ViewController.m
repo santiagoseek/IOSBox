@@ -241,6 +241,68 @@
 
 
 
+/*
+-(void)threadSendPV
+{
+    NSThread* pageviewThread =[[NSThread alloc] initWithTarget:self selector:@selector(pageviewNormalThreadRun) object:nil];
+    [pageviewThread setName:@"NormalPageViewSendThread"];
+    [pageviewThread start];
+}
+-(void)pageviewNormalThreadRun{
+    for (int i=0; i<100; i++) {
+        NSLog(@"当前线程id：%d，线程名：%@",i,[[NSThread currentThread] name]);
+        NSString *pvName = [NSString stringWithFormat:@"pvNormalThread%d",i];
+        [UBT startPageView:pvName];
+    }
+}
+
+-(void)threadSendAction
+{
+    NSThread* actionThread =[[NSThread alloc] initWithTarget:self selector:@selector(actionNormalThreadRun) object:nil];
+    [actionThread setName:@"NormalActionSendThread"];
+    [actionThread start];
+}
+-(void)actionNormalThreadRun{
+    for (int i = 0; i<100; i++) {
+        NSLog(@"当前线程id：%d，线程名：%@",i,[[NSThread currentThread] name]);
+        NSString *eventUserInfo = [NSString stringWithFormat:@"eventUserInfo%d",i];
+        [UBT sendEvent:@"onclick" target:@"eventTargetThread" category:@"eventCategoryThread" userInfo:@{eventUserInfo:@"value"}];
+    }
+    
+}
+
+-(void)threadSendMetric
+{
+    NSThread* metricThread =[[NSThread alloc] initWithTarget:self selector:@selector(metricNormalThreadRun) object:nil];
+    [metricThread setName:@"NormalMetricSendThread"];
+    [metricThread start];
+    
+}
+-(void)metricNormalThreadRun{
+    for (int i = 0; i<100; i++) {
+        NSLog(@"当前线程id：%d，线程名：%@",i,[[NSThread currentThread] name]);
+        NSString *metricName = @"metricName";
+        metricName = [metricName stringByAppendingString:[NSString stringWithFormat:@"%d", i]];
+        [UBT sendMetric:metricName value:@(11111) tags:@{@"userDataKey":@"userDataValue"}];
+    }
+}
+
+-(void)threadSendTrace
+{
+    NSThread* traceThread = [[NSThread alloc] initWithTarget:self selector:@selector(traceNormalThreadRun) object:nil];
+    [traceThread setName:@"NormalTraceSendThread"];
+    [traceThread start];
+}
+-(void)traceNormalThreadRun{
+    for (int i = 0; i<100; i++) {
+        NSLog(@"当前线程id：%d，线程名：%@",i,[[NSThread currentThread] name]);
+        NSString* traceKey = [NSString stringWithFormat:@"traceKey%d",i];
+        [UBT trace:traceKey userInfo:@{@"userInfo":@"info_value"}];
+    }
+}
+ */
+
+
 
 
 
