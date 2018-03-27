@@ -1,0 +1,215 @@
+#import "ViewController.h"
+#import "UBT.h"
+
+
+@interface ViewController ()
+
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+	// Do any additional setup after loading the view, typically from a nib.
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+
+#pragma mark - TableView DataSource
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 14;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString * const actionIdentifier = @"UBT_ACTION_CELL";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:actionIdentifier];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:actionIdentifier];
+    }
+    
+    switch (indexPath.row) {
+        case 0:
+            cell.textLabel.text = @"Start PageView";
+            break;
+        case 1:
+            cell.textLabel.text = @"set PageView Attributes";
+            break;
+        case 2:
+            cell.textLabel.text = @"Send Action";
+            break;
+        case 3:
+            cell.textLabel.text = @"Send Metric";
+            break;
+        case 4:
+            cell.textLabel.text = @"Send Delta Metric";
+            break;
+        case 5:
+            cell.textLabel.text = @"Send Trace";
+            break;
+        case 6:
+            cell.textLabel.text = @"Send Custom";
+            break;
+        case 7:
+            cell.textLabel.text = @"Crash Test";
+            break;
+        case 8:
+            cell.textLabel.text = @"ThreadSend PageView";
+            break;
+        case 9:
+            cell.textLabel.text = @"set Env";
+            break;
+        case 10:
+            cell.textLabel.text = @"ThreadSend Action";
+            break;
+        case 11:
+            cell.textLabel.text = @"ThreadSend Metric";
+            break;
+        case 12:
+            cell.textLabel.text = @"ThreadSend Trace";
+            break;
+        case 13:
+            cell.textLabel.text = @"Test";
+            break;
+        default:
+            break;
+    }
+    
+    return cell;
+}
+
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    switch (indexPath.row) {
+        case 0:
+            [UBT startPageView:@"testPageView"];
+            break;
+        case 1:
+            [UBT setPageAttribute:@"attrName" withValue:@"attrValue"];
+            break;
+        case 2:
+            [UBT sendEvent:@"eventType" target:@"eventTarget" category:@"eventCategory" userInfo:@{@"userInfo":@"value"}];
+            break;
+        case 3:
+            [UBT sendMetric:@"metricName" value:@(888888) tags:@{@"tag1":@"tag1_value"}];
+            break;
+        case 4:
+            [UBT startDeltaMetric:@"deltaMetricName" value:@(10000)];
+            [UBT sendDeltaMetric:@"deltaMetricName" value:@(99999) tags:@{@"tag2":@"tag2_value"}];
+            break;
+        case 5:
+            [UBT trace:@"traceKey" userInfo:@{@"userInfo":@"info_value"}];
+            break;
+        case 6:
+            [self customAction];
+            break;
+        case 7:
+            [self crashList];
+            break;
+        case 8:
+            [self threadSendPV];
+            break;
+        case 9:
+            [UBT setEnvVars:@{@"systemcode":@"12x",@"appversion":@"6.xxx",@"clientcode":@"123123xx"}];
+            break;
+        case 10:
+            [self threadSendAction];
+            break;
+        case 11:
+            [self threadSendMetric];
+            break;
+        case 12:
+            [self threadSendTrace];
+            break;
+        case 13:
+            break;
+        default:
+            break;
+    }
+    
+}
+
+
+- (void)customAction
+{
+    
+}
+
+- (void)crashList
+{
+    [self performSegueWithIdentifier:@"Crash" sender:self];
+}
+
+
+-(void)threadSendPV
+{
+    NSThread* pageviewThread =[[NSThread alloc] initWithTarget:self selector:@selector(pageviewNormalThreadRun) object:nil];
+    [pageviewThread setName:@"NormalPageViewSendThread"];
+    [pageviewThread start];
+}
+-(void)pageviewNormalThreadRun{
+    for (int i=0; i<100; i++) {
+        NSLog(@"当前线程id：%d，线程名：%@",i,[[NSThread currentThread] name]);
+        NSString *pvName = [NSString stringWithFormat:@"pvNormalThread%d",i];
+        [UBT startPageView:pvName];
+    }
+}
+
+-(void)threadSendAction
+{
+    NSThread* actionThread =[[NSThread alloc] initWithTarget:self selector:@selector(actionNormalThreadRun) object:nil];
+    [actionThread setName:@"NormalActionSendThread"];
+    [actionThread start];
+}
+-(void)actionNormalThreadRun{
+    for (int i = 0; i<100; i++) {
+        NSLog(@"当前线程id：%d，线程名：%@",i,[[NSThread currentThread] name]);
+        NSString *eventUserInfo = [NSString stringWithFormat:@"eventUserInfo%d",i];
+        [UBT sendEvent:@"onclick" target:@"eventTargetThread" category:@"eventCategoryThread" userInfo:@{eventUserInfo:@"value"}];
+    }
+    
+}
+
+-(void)threadSendMetric
+{
+    NSThread* metricThread =[[NSThread alloc] initWithTarget:self selector:@selector(metricNormalThreadRun) object:nil];
+    [metricThread setName:@"NormalMetricSendThread"];
+    [metricThread start];
+    
+}
+-(void)metricNormalThreadRun{
+    for (int i = 0; i<100; i++) {
+        NSLog(@"当前线程id：%d，线程名：%@",i,[[NSThread currentThread] name]);
+        NSString *metricName = @"metricName";
+        metricName = [metricName stringByAppendingString:[NSString stringWithFormat:@"%d", i]];
+        [UBT sendMetric:metricName value:@(11111) tags:@{@"userDataKey":@"userDataValue"}];
+    }
+}
+
+-(void)threadSendTrace
+{
+    NSThread* traceThread = [[NSThread alloc] initWithTarget:self selector:@selector(traceNormalThreadRun) object:nil];
+    [traceThread setName:@"NormalTraceSendThread"];
+    [traceThread start];
+}
+-(void)traceNormalThreadRun{
+    for (int i = 0; i<100; i++) {
+        NSLog(@"当前线程id：%d，线程名：%@",i,[[NSThread currentThread] name]);
+        NSString* traceKey = [NSString stringWithFormat:@"traceKey%d",i];
+        [UBT trace:traceKey userInfo:@{@"userInfo":@"info_value"}];
+    }
+}
+
+@end
